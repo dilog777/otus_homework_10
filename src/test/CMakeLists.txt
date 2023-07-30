@@ -4,7 +4,7 @@ add_executable(test_google ${SRC})
 
 target_link_libraries(test_google PRIVATE
 	GTest::gtest_main
-	helloworld_lib
+	bulk_lib
 )
 
 include(GoogleTest)
