@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
-	int blockSize = atoi(argv[1]);
+	size_t blockSize = static_cast<size_t>(atoi(argv[1]));
 
 	auto logger = std::make_shared<BlockLogger>();
 	auto executor = std::make_shared<CommandExecutor>(logger);

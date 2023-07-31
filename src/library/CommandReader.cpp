@@ -10,12 +10,12 @@ const int DEFAULT_BLOCK_SIZE = 3;
 
 
 
-CommandReader::CommandReader(const std::shared_ptr<CommandExecutor> &executor, const std::shared_ptr<BlockLogger> &logger, int blockSize)
+CommandReader::CommandReader(const std::shared_ptr<CommandExecutor> &executor, const std::shared_ptr<BlockLogger> &logger, size_t blockSize)
 	: _executor { executor }
 	, _logger { logger }
 	, _blockSize { blockSize }
 {
-	if (_blockSize <= 0)
+	if (_blockSize == 0)
 		_blockSize = DEFAULT_BLOCK_SIZE;
 }
 
