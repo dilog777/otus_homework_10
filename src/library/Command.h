@@ -1,16 +1,12 @@
 #pragma once
 
-#include <string>
-
+class CommandMachine;
 
 
 class Command
 {
 public:
-	Command(const std::string &name);
+	virtual ~Command() = default;
 
-	const std::string &name() const;
-
-private:
-	std::string _name;
+	virtual void execute(CommandMachine *machine) const = 0;
 };

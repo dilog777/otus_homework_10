@@ -2,10 +2,15 @@
 
 #include <string>
 
+
+
 class Logger
 {
 public:
-	virtual ~Logger() = default;
+	void beginBlock();
 
-	virtual void log(const std::string &str) = 0;
+	void log(const std::string &str);
+
+private:
+	time_t _beginBlock { 0 };
 };

@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "BlockLogger.h"
 #include "CommandExecutor.h"
 #include "CommandReader.h"
+#include "Logger.h"
 
 const char *const USAGE_MESSAGE = "Usage: bulk %d";
 
@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
 	
 	size_t blockSize = static_cast<size_t>(atoi(argv[1]));
 
-	auto logger = std::make_shared<BlockLogger>();
-	auto executor = std::make_shared<CommandExecutor>(logger);
-	auto reader = std::make_shared<CommandReader>(executor, logger, blockSize);
+	auto logger = std::make_shared<Logger>();
+	auto executor = std::make_shared<CommandExecutor>(logger, blockSize);
+	auto reader = std::make_shared<CommandReader>(executor);
 	
 	reader->run();
 
