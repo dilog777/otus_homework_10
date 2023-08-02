@@ -20,10 +20,10 @@ void Logger::log(const std::string& str)
 
 	auto fileName = "bulk" + std::to_string(_beginBlock) + ".log";
 	std::ofstream out;
-	//out.open(fileName);
-	//if (out.is_open())
-	//{
-	//	out << str << std::endl;
-	//}
-	//out.close();
+	out.open(fileName);
+	if (out.is_open())
+	{
+		out << str << std::endl;
+	}
+	out.close();
 }
