@@ -25,6 +25,7 @@ public:
 	void textCommand(const std::string &text) override;
 
 	void outTextBuffer();
+	void finish();
 
 private:
 	std::shared_ptr<Logger> _logger;
@@ -49,6 +50,9 @@ CommandExecutor::Impl::Impl(const std::shared_ptr<Logger> &logger, size_t blockS
 
 void CommandExecutor::Impl::beginBlock()
 {
+	if (_deep == 0)
+		outTextBuffer();
+
 	++_deep;
 }
 
@@ -92,6 +96,14 @@ void CommandExecutor::Impl::outTextBuffer()
 
 
 
+void CommandExecutor::Impl::finish()
+{
+	if (_deep == 0)
+		outTextBuffer();
+}
+
+
+
 std::string CommandExecutor::Impl::join(std::list<std::string> const &strings, std::string delim) const
 {
 	auto joinFunc = [&delim](const std::string &str1, const std::string &str2)
@@ -127,5 +139,5 @@ void CommandExecutor::execute(const std::shared_ptr<Command> &command)
 
 void CommandExecutor::finish()
 {
-	_impl->outTextBuffer();
+	_impl->finish();
 }
