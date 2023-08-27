@@ -7,10 +7,5 @@
 class Logger
 {
 public:
-	void beginBlock();
-
-	void log(const std::string &str);
-
-private:
-	time_t _beginBlock { 0 };
+	void log(time_t timeStamp, const std::string &str) const;
 };

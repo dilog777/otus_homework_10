@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 
-class Command;
 class Logger;
 
 

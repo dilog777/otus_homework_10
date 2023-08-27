@@ -17,8 +17,7 @@ AsyncManager &AsyncManager::getInstance()
 
 AsyncManager::Handle AsyncManager::connect(std::size_t blockSize)
 {
-	auto logger = std::make_shared<Logger>();
-	auto executor = std::make_unique<CommandExecutor>(logger, blockSize);
+	auto executor = std::make_unique<CommandExecutor>(_logger, blockSize);
 	Handle handle = executor.get();
 
 	std::unique_lock lock { _mutex };
@@ -49,4 +48,11 @@ void AsyncManager::disconnect(Handle handle)
 		return;
 
 	_executors.erase(handle);
+}
+
+
+
+AsyncManager::AsyncManager()
+	: _logger { new Logger }
+{
 }

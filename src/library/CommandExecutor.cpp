@@ -1,6 +1,7 @@
 #include "CommandExecutor.h"
 
 #include <cassert>
+#include <chrono>
 #include <list>
 #include <numeric>
 #include <sstream>
@@ -9,6 +10,9 @@
 #include "CommandFactory.h"
 #include "CommandMachine.h"
 #include "Logger.h"
+
+using system_clock = std::chrono::system_clock;
+
 
 
 const char *const COMMAND_DELIMITER = ", ";
@@ -20,23 +24,26 @@ class CommandExecutor::Impl : public CommandMachine
 {
 public:
 	Impl(const std::shared_ptr<Logger> &logger, size_t blockSize);
+	~Impl();
 
 	// CommandMachine interface
 	void beginBlock() override;
 	void endBlock() override;
 	void textCommand(const std::string &text) override;
 
-	void outTextBuffer();
-	void finish();
-
 private:
 	std::shared_ptr<Logger> _logger;
 	size_t _blockSize { 0 };
+
+	time_t _beginBlockTime { 0 };
 
 	int _deep { 0 };
 	std::list<std::string> _textBuffer;
 
 	std::string join(std::list<std::string> const &strings, std::string delim) const;
+
+	void outTextBuffer();
+	time_t currentTime() const;
 };
 
 
@@ -46,6 +53,14 @@ CommandExecutor::Impl::Impl(const std::shared_ptr<Logger> &logger, size_t blockS
 	, _blockSize { blockSize }
 {
 	assert(_blockSize > 0);
+}
+
+
+
+CommandExecutor::Impl::~Impl()
+{
+	if (_deep == 0)
+		outTextBuffer();
 }
 
 
@@ -76,7 +91,7 @@ void CommandExecutor::Impl::endBlock()
 void CommandExecutor::Impl::textCommand(const std::string &text)
 {
 	if (_textBuffer.empty())
-		_logger->beginBlock();
+		_beginBlockTime = currentTime();
 
 	_textBuffer.push_back(text);
 
@@ -92,16 +107,16 @@ void CommandExecutor::Impl::outTextBuffer()
 		return;
 
 	std::string result = COMMAND_OUT_PREFIX + join(_textBuffer, COMMAND_DELIMITER);
-	_logger->log(result);
+	_logger->log(_beginBlockTime, result);
 	_textBuffer.clear();
 }
 
 
 
-void CommandExecutor::Impl::finish()
+time_t CommandExecutor::Impl::currentTime() const
 {
-	if (_deep == 0)
-		outTextBuffer();
+	auto now = system_clock::now();
+	return system_clock::to_time_t(now);
 }
 
 
@@ -127,7 +142,6 @@ CommandExecutor::CommandExecutor(const std::shared_ptr<Logger> &logger, size_t b
 
 CommandExecutor::~CommandExecutor()
 {
-	_impl->finish();
 	delete _impl;
 }
 

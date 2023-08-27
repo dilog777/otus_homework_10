@@ -3,10 +3,10 @@
 #include <memory>
 #include <shared_mutex>
 #include <string>
-
 #include <unordered_map>
 
 class CommandExecutor;
+class Logger;
 
 
 
@@ -28,8 +28,9 @@ public:
 	AsyncManager &operator=(AsyncManager &&) = delete;      // Move assign
 
 private:
-	AsyncManager() = default;
+	AsyncManager();
 
 	mutable std::shared_mutex _mutex;
+	std::shared_ptr<Logger> _logger;
 	std::unordered_map<Handle, std::unique_ptr<CommandExecutor>> _executors;
 };
