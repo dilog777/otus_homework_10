@@ -19,7 +19,7 @@ endif()
 add_subdirectory(src)
 
 
-install(TARGETS async_app async)
+install(TARGETS async_cli async)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
@@ -28,4 +28,4 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT async_cli)
