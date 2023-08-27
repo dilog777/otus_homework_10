@@ -1,8 +1,8 @@
 #include "CommandFactory.h"
 
-#include "CommandBeginBlock.h"
-#include "CommandEndBlock.h"
-#include "CommandText.h"
+#include "Command/CommandBeginBlock.h"
+#include "Command/CommandEndBlock.h"
+#include "Command/CommandText.h"
 
 
 

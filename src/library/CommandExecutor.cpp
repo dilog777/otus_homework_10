@@ -3,8 +3,10 @@
 #include <cassert>
 #include <list>
 #include <numeric>
+#include <sstream>
 
-#include "Command.h"
+#include "Command/Command.h"
+#include "CommandFactory.h"
 #include "CommandMachine.h"
 #include "Logger.h"
 
@@ -125,19 +127,19 @@ CommandExecutor::CommandExecutor(const std::shared_ptr<Logger> &logger, size_t b
 
 CommandExecutor::~CommandExecutor()
 {
+	_impl->finish();
 	delete _impl;
 }
 
 
 
-void CommandExecutor::execute(const std::shared_ptr<Command> &command)
+void CommandExecutor::execute(const std::string &buffer)
 {
-	command->execute(_impl);
-}
-
-
-
-void CommandExecutor::finish()
-{
-	_impl->finish();
+	std::stringstream ss(buffer);
+	std::string str;
+	while (std::getline(ss, str))
+	{
+		auto command = CommandFactory::makeCommand(str);
+		command->execute(_impl);
+	}
 }

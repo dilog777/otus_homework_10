@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 class Command;
 class Logger;
@@ -13,8 +14,7 @@ public:
 	CommandExecutor(const std::shared_ptr<Logger> &logger, size_t blockSize);
 	~CommandExecutor();
 
-	void execute(const std::shared_ptr<Command> &command);
-	void finish();
+	void execute(const std::string &buffer);
 
 private:
 	class Impl;
