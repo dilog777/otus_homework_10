@@ -1,5 +1,7 @@
 #include "AsyncManager.h"
 
+#include <mutex>
+
 #include "CommandExecutor.h"
 #include "Logger.h"
 
