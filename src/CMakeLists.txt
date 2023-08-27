@@ -1,3 +1,3 @@
 add_subdirectory(app)
-add_subdirectory(library)
-add_subdirectory(async_lib)
+add_subdirectory(async)
+add_subdirectory(bulk)

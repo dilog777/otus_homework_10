@@ -1,4 +1,4 @@
-project(async_lib VERSION ${PROJECT_VERSION})
+project(async VERSION ${PROJECT_VERSION})
 
 file(GLOB_RECURSE SRC *.h *.hpp *.cpp)
 

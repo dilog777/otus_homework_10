@@ -1,4 +1,4 @@
-project(bulk_lib VERSION ${PROJECT_VERSION})
+project(bulk VERSION ${PROJECT_VERSION})
 
 file(GLOB_RECURSE SRC *.h *.hpp *.cpp)
 
@@ -7,5 +7,5 @@ add_library(${PROJECT_NAME} STATIC ${SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-	async_lib
+	async
 )
