@@ -4,11 +4,11 @@
 
 
 
-class ConsoleLogger
+class FileLogger
 {
 public:
-	ConsoleLogger();
-	~ConsoleLogger();
+	FileLogger();
+	~FileLogger();
 	
 	void log(time_t time, const std::string &str);
 
