@@ -153,6 +153,9 @@ void CommandExecutor::execute(const std::string &buffer)
 	std::string str;
 	while (std::getline(ss, str))
 	{
+		if (str.empty())
+			continue;
+
 		auto command = CommandFactory::makeCommand(str);
 		command->execute(_impl);
 	}

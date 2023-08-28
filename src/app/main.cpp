@@ -1,5 +1,8 @@
 #include <async.h>
 
+#include <iostream>
+#include <thread>
+
 
 
 int main(int, char **)
@@ -13,6 +16,11 @@ int main(int, char **)
 	async::receive(h, "b\nc\nd\n}\n89\n", 11);
 	async::disconnect(h);
 	async::disconnect(h2);
+
+
+	std::cout << "int main(int, char **) 1" << std::endl;
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	std::cout << "int main(int, char **) 2" << std::endl;
 
 	return 0;
 }
