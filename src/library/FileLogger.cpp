@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-const unsigned int THREADS_COUNT = 2;
+const int THREADS_COUNT = 2;
 
 
 
