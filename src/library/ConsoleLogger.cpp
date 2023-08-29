@@ -37,7 +37,7 @@ ConsoleLogger::Impl::Impl()
 
 
 ConsoleLogger::Impl::~Impl()
-{	
+{
 	{
 		std::unique_lock lock { _mutex };
 		_stopped = true;

@@ -35,7 +35,7 @@ AsyncManager::Handle AsyncManager::connect(std::size_t blockSize)
 void AsyncManager::receive(Handle handle, const std::string &buffer) const
 {
 	std::shared_lock lock { _mutex };
-	
+
 	if (_executors.count(handle) == 0)
 		return;
 

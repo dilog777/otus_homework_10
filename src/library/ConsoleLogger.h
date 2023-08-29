@@ -9,7 +9,7 @@ class ConsoleLogger : public Logger
 public:
 	ConsoleLogger();
 	~ConsoleLogger() override;
-	
+
 	void log(time_t time, const std::string &str) override;
 
 private:

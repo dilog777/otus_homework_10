@@ -2,7 +2,6 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <queue>
@@ -53,7 +52,7 @@ FileLogger::Impl::Impl()
 
 
 FileLogger::Impl::~Impl()
-{	
+{
 	{
 		std::unique_lock lock { _mutex };
 		_stopped = true;
@@ -91,7 +90,7 @@ void FileLogger::Impl::workerThread(int threadId)
 		{
 			_condition.wait(lock);
 		}
-		
+
 		while (!_notes.empty())
 		{
 			auto note = _notes.front();

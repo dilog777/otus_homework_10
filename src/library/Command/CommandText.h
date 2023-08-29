@@ -10,7 +10,7 @@ class CommandText : public Command
 {
 public:
 	CommandText(const std::string &name);
-	
+
 	void execute(CommandMachine *machine) const override;
 
 private:
