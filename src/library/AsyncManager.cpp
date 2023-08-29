@@ -3,7 +3,8 @@
 #include <mutex>
 
 #include "CommandExecutor.h"
-#include "Logger.h"
+#include "ConsoleLogger.h"
+#include "FileLogger.h"
 
 
 
@@ -17,7 +18,10 @@ AsyncManager &AsyncManager::getInstance()
 
 AsyncManager::Handle AsyncManager::connect(std::size_t blockSize)
 {
-	auto executor = std::make_unique<CommandExecutor>(_logger, blockSize);
+	auto executor = std::make_unique<CommandExecutor>(blockSize);
+	executor->addLogger(_consoleLogger);
+	executor->addLogger(_fileLogger);
+
 	Handle handle = executor.get();
 
 	std::unique_lock lock { _mutex };
@@ -53,6 +57,7 @@ void AsyncManager::disconnect(Handle handle)
 
 
 AsyncManager::AsyncManager()
-	: _logger { new Logger }
+	: _consoleLogger { new ConsoleLogger }
+	, _fileLogger { new FileLogger }
 {
 }

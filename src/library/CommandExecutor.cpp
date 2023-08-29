@@ -23,7 +23,7 @@ const char *const COMMAND_OUT_PREFIX = "bulk: ";
 class CommandExecutor::Impl : public CommandMachine
 {
 public:
-	Impl(const std::shared_ptr<Logger> &logger, size_t blockSize);
+	Impl(size_t blockSize);
 	~Impl();
 
 	// CommandMachine interface
@@ -31,8 +31,10 @@ public:
 	void endBlock() override;
 	void textCommand(const std::string &text) override;
 
+public:
+	std::list<std::shared_ptr<Logger>> _loggers;
+
 private:
-	std::shared_ptr<Logger> _logger;
 	size_t _blockSize { 0 };
 
 	time_t _beginBlockTime { 0 };
@@ -48,9 +50,8 @@ private:
 
 
 
-CommandExecutor::Impl::Impl(const std::shared_ptr<Logger> &logger, size_t blockSize)
-	: _logger { logger }
-	, _blockSize { blockSize }
+CommandExecutor::Impl::Impl(size_t blockSize)
+	: _blockSize { blockSize }
 {
 	assert(_blockSize > 0);
 }
@@ -107,7 +108,10 @@ void CommandExecutor::Impl::outTextBuffer()
 		return;
 
 	std::string result = COMMAND_OUT_PREFIX + join(_textBuffer, COMMAND_DELIMITER);
-	_logger->log(_beginBlockTime, result);
+
+	for (const auto &logger : _loggers)
+		logger->log(_beginBlockTime, result);
+
 	_textBuffer.clear();
 }
 
@@ -133,8 +137,8 @@ std::string CommandExecutor::Impl::join(std::list<std::string> const &strings, s
 
 
 
-CommandExecutor::CommandExecutor(const std::shared_ptr<Logger> &logger, size_t blockSize)
-	: _impl { new Impl(logger, blockSize) }
+CommandExecutor::CommandExecutor(size_t blockSize)
+	: _impl { new Impl(blockSize) }
 {
 }
 
@@ -143,6 +147,13 @@ CommandExecutor::CommandExecutor(const std::shared_ptr<Logger> &logger, size_t b
 CommandExecutor::~CommandExecutor()
 {
 	delete _impl;
+}
+
+
+
+void CommandExecutor::addLogger(const std::shared_ptr<Logger> &logger)
+{
+	_impl->_loggers.push_back(logger);
 }
 
 

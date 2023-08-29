@@ -1,21 +1,13 @@
 #pragma once
 
 #include <string>
-#include <memory>
-
-class ConsoleLogger;
-class FileLogger;
 
 
 
 class Logger
 {
 public:
-	Logger();
+	virtual ~Logger() = default;
 	
-	void log(time_t time, const std::string &str) const;
-
-private:
-	std::shared_ptr<ConsoleLogger> _consoleLogger;
-	std::shared_ptr<FileLogger> _fileLogger;
+	virtual void log(time_t time, const std::string &str) = 0;
 };

@@ -6,7 +6,8 @@
 #include <unordered_map>
 
 class CommandExecutor;
-class Logger;
+class ConsoleLogger;
+class FileLogger;
 
 
 
@@ -29,7 +30,9 @@ public:
 private:
 	AsyncManager();
 
+	std::shared_ptr<ConsoleLogger> _consoleLogger;
+	std::shared_ptr<FileLogger> _fileLogger;
+
 	mutable std::shared_mutex _mutex;
-	std::shared_ptr<Logger> _logger;
 	std::unordered_map<Handle, std::unique_ptr<CommandExecutor>> _executors;
 };

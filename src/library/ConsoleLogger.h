@@ -1,16 +1,16 @@
 #pragma once
 
-#include <string>
+#include "Logger.h"
 
 
 
-class ConsoleLogger
+class ConsoleLogger : public Logger
 {
 public:
 	ConsoleLogger();
-	~ConsoleLogger();
+	~ConsoleLogger() override;
 	
-	void log(time_t time, const std::string &str);
+	void log(time_t time, const std::string &str) override;
 
 private:
 	class Impl;

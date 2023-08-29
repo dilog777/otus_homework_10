@@ -3,6 +3,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <queue>
 #include <thread>
@@ -33,8 +34,9 @@ private:
 	std::vector<std::thread> _threads;
 	std::atomic<bool> _stopped { false };
 
-	void workerThread();
-	void processNote(const Note &note) const;
+	void workerThread(int threadId);
+	void processNote(const Note &note, int threadId) const;
+	std::string makeFileName(time_t time, int threadId) const;
 };
 
 
@@ -43,7 +45,8 @@ FileLogger::Impl::Impl()
 {
 	for (int i = 0; i < THREADS_COUNT; ++i)
 	{
-		_threads.emplace_back(&Impl::workerThread, this);
+		int threadId = i + 1;
+		_threads.emplace_back(&Impl::workerThread, this, threadId);
 	}
 }
 
@@ -78,7 +81,7 @@ void FileLogger::Impl::log(time_t time, const std::string &str)
 
 
 
-void FileLogger::Impl::workerThread()
+void FileLogger::Impl::workerThread(int threadId)
 {
 	std::unique_lock lock { _mutex };
 
@@ -95,7 +98,7 @@ void FileLogger::Impl::workerThread()
 			_notes.pop();
 
 			lock.unlock();
-			processNote(note);
+			processNote(note, threadId);
 			lock.lock();
 		}
 	}
@@ -103,18 +106,32 @@ void FileLogger::Impl::workerThread()
 
 
 
-void FileLogger::Impl::processNote(const Note &note) const
+void FileLogger::Impl::processNote(const Note &note, int threadId) const
 {
-	std::cout << std::this_thread::get_id() << " " << note._time << " " << note._str << std::endl;
+	auto fileName = makeFileName(note._time, threadId);
+	std::ofstream out;
+	out.open(fileName);
+	if (out.is_open())
+	{
+		out << note._str << std::endl;
+	}
+	out.close();
+}
 
-//	auto fileName = "bulk" + std::to_string(timeStamp) + ".log";
-//	std::ofstream out;
-//	out.open(fileName);
-//	if (out.is_open())
-//	{
-//		out << str << std::endl;
-//	}
-//	out.close();
+
+
+std::string FileLogger::Impl::makeFileName(time_t time, int threadId) const
+{
+	auto fileNameBase = "bulk" + std::to_string(time) + "_thread_" + std::to_string(threadId);
+	auto fileName = fileNameBase + ".log";
+
+	int i = 1;
+	while (std::filesystem::exists(fileName))
+	{
+		fileName = fileNameBase + "_" + std::to_string(++i) + ".log";
+	}
+
+	return fileName;
 }
 
 

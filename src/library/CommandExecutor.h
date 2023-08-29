@@ -10,8 +10,10 @@ class Logger;
 class CommandExecutor
 {
 public:
-	CommandExecutor(const std::shared_ptr<Logger> &logger, size_t blockSize);
+	CommandExecutor(size_t blockSize);
 	~CommandExecutor();
+
+	void addLogger(const std::shared_ptr<Logger> &logger);
 
 	void execute(const std::string &buffer);
 
