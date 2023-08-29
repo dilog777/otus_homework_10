@@ -14,12 +14,11 @@ public:
 	Impl();
 	~Impl();
 
-	void log(const std::string &str);
-
-private:
+	std::mutex _mutex;
 	std::condition_variable _condition;
 	std::queue<std::string> _strings;
-	std::mutex _mutex;
+
+private:
 	std::thread _thread;
 	std::atomic<bool> _stopped { false };
 
@@ -49,18 +48,6 @@ ConsoleLogger::Impl::~Impl()
 
 
 
-void ConsoleLogger::Impl::log(const std::string &str)
-{
-	{
-		std::unique_lock lock { _mutex };
-		_strings.push(str);
-	}
-
-	_condition.notify_one();
-}
-
-
-
 void ConsoleLogger::Impl::workerThread()
 {
 	std::unique_lock lock { _mutex };
@@ -79,6 +66,8 @@ void ConsoleLogger::Impl::workerThread()
 
 			lock.unlock();
 			processString(str);
+			_condition.notify_all();
+
 			lock.lock();
 		}
 	}
@@ -109,5 +98,21 @@ ConsoleLogger::~ConsoleLogger()
 
 void ConsoleLogger::log([[maybe_unused]] time_t time, const std::string &str)
 {
-	_impl->log(str);
+	{
+		std::unique_lock lock { _impl->_mutex };
+		_impl->_strings.push(str);
+	}
+
+	_impl->_condition.notify_one();
+}
+
+
+
+void ConsoleLogger::finishWork() const
+{
+	std::unique_lock lock { _impl->_mutex };
+	while (!_impl->_strings.empty())
+	{
+		_impl->_condition.wait(lock);
+	}
 }

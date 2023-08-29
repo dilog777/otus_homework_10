@@ -18,18 +18,17 @@ public:
 	Impl();
 	~Impl();
 
-	void log(time_t time, const std::string &str);
+	std::mutex _mutex;
+	std::condition_variable _condition;
 
-private:
 	struct Note
 	{
 		time_t _time;
 		std::string _str;
 	};
-
-	std::condition_variable _condition;
 	std::queue<Note> _notes;
-	std::mutex _mutex;
+
+private:
 	std::vector<std::thread> _threads;
 	std::atomic<bool> _stopped { false };
 
@@ -68,18 +67,6 @@ FileLogger::Impl::~Impl()
 
 
 
-void FileLogger::Impl::log(time_t time, const std::string &str)
-{
-	{
-		std::unique_lock lock { _mutex };
-		_notes.push({ time, str });
-	}
-
-	_condition.notify_one();
-}
-
-
-
 void FileLogger::Impl::workerThread(int threadId)
 {
 	std::unique_lock lock { _mutex };
@@ -98,6 +85,8 @@ void FileLogger::Impl::workerThread(int threadId)
 
 			lock.unlock();
 			processNote(note, threadId);
+			_condition.notify_all();
+
 			lock.lock();
 		}
 	}
@@ -151,5 +140,21 @@ FileLogger::~FileLogger()
 
 void FileLogger::log(time_t time, const std::string &str)
 {
-	_impl->log(time, str);
+	{
+		std::unique_lock lock { _impl->_mutex };
+		_impl->_notes.push({ time, str });
+	}
+
+	_impl->_condition.notify_one();
+}
+
+
+
+void FileLogger::finishWork() const
+{
+	std::unique_lock lock { _impl->_mutex };
+	while (!_impl->_notes.empty())
+	{
+		_impl->_condition.wait(lock);
+	}
 }

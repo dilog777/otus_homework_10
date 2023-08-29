@@ -52,6 +52,13 @@ void AsyncManager::disconnect(Handle handle)
 		return;
 
 	_executors.erase(handle);
+
+	 // Protection from terminating the application before the end of work
+	if (_executors.empty())
+	{
+		_consoleLogger->finishWork();
+		_fileLogger->finishWork();
+	}
 }
 
 
