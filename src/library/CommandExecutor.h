@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
+class Command;
 class Logger;
 
 
@@ -15,7 +15,9 @@ public:
 
 	void addLogger(const std::shared_ptr<Logger> &logger);
 
-	void execute(const std::string &buffer);
+	void execute(const std::shared_ptr<Command> &command);
+
+	bool dynamicMode() const;
 
 private:
 	class Impl;

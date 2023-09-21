@@ -1,70 +1,51 @@
 #include "AsyncManager.h"
 
-#include <mutex>
-
+#include "Command/Command.h"
 #include "CommandExecutor.h"
+#include "CommandFactory.h"
 #include "ConsoleLogger.h"
 #include "FileLogger.h"
 
 
 
-AsyncManager &AsyncManager::getInstance()
+AsyncManager::AsyncManager(std::size_t blockSize)
+	: _blockSize { blockSize }
+	, _consoleLogger { new ConsoleLogger }
+	, _fileLogger { new FileLogger }
 {
-	static AsyncManager instance;
-	return instance;
+	_commonExecutor = makeExecutor();
 }
 
 
 
-AsyncManager::Handle AsyncManager::connect(std::size_t blockSize)
+void AsyncManager::execute(const ClientId &clientId, const std::string &commandStr)
 {
-	auto executor = std::make_unique<CommandExecutor>(blockSize);
-	executor->addLogger(_consoleLogger);
-	executor->addLogger(_fileLogger);
+	auto command = CommandFactory::makeCommand(commandStr);
 
-	Handle handle = executor.get();
-
-	std::unique_lock lock { _mutex };
-	_executors[handle] = std::move(executor);
-
-	return handle;
-}
-
-
-
-void AsyncManager::receive(Handle handle, const std::string &buffer) const
-{
-	std::shared_lock lock { _mutex };
-
-	if (_executors.count(handle) == 0)
-		return;
-
-	_executors.at(handle)->execute(buffer);
-}
-
-
-
-void AsyncManager::disconnect(Handle handle)
-{
-	std::unique_lock lock { _mutex };
-
-	if (_executors.count(handle) == 0)
-		return;
-
-	_executors.erase(handle);
-
-	 // Protection from terminating the application before the end of work
-	if (_executors.empty())
+	if (_clientExecutors.count(clientId) != 0)
 	{
-		_consoleLogger->finishWork();
-		_fileLogger->finishWork();
+		auto &executor = _clientExecutors.at(clientId);
+		executor->execute(command);
+		if (!executor->dynamicMode())
+			_clientExecutors.erase(clientId);
+	}
+	else if (command->type() == Command::Type::BeginBlock)
+	{
+		_clientExecutors[clientId] = makeExecutor();
+		_clientExecutors.at(clientId)->execute(command);
+	}
+	else
+	{
+		_commonExecutor->execute(command);
 	}
 }
 
 
 
-AsyncManager::AsyncManager()
-	: _consoleLogger { new ConsoleLogger }
-	, _fileLogger { new FileLogger }
+std::shared_ptr<CommandExecutor> AsyncManager::makeExecutor() const
 {
+	auto executor = std::make_shared<CommandExecutor>(_blockSize);
+	executor->addLogger(_consoleLogger);
+	executor->addLogger(_fileLogger);
+	return executor;
 }

@@ -4,10 +4,8 @@
 #include <chrono>
 #include <list>
 #include <numeric>
-#include <sstream>
 
 #include "Command/Command.h"
-#include "CommandFactory.h"
 #include "CommandMachine.h"
 #include "Logger.h"
 
@@ -33,13 +31,12 @@ public:
 
 public:
 	std::list<std::shared_ptr<Logger>> _loggers;
+	int _deep { 0 };
 
 private:
 	size_t _blockSize { 0 };
 
 	time_t _beginBlockTime { 0 };
-
-	int _deep { 0 };
 	std::list<std::string> _textBuffer;
 
 	std::string join(std::list<std::string> const &strings, std::string delim) const;
@@ -158,16 +155,14 @@ void CommandExecutor::addLogger(const std::shared_ptr<Logger> &logger)
 
 
 
-void CommandExecutor::execute(const std::string &buffer)
+void CommandExecutor::execute(const std::shared_ptr<Command> &command)
 {
-	std::stringstream ss(buffer);
-	std::string str;
-	while (std::getline(ss, str))
-	{
-		if (str.empty())
-			continue;
+	command->execute(_impl);
+}
 
-		auto command = CommandFactory::makeCommand(str);
-		command->execute(_impl);
-	}
+
+
+bool CommandExecutor::dynamicMode() const
+{
+	return (_impl->_deep == 0);
 }

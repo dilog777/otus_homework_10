@@ -7,5 +7,7 @@
 class CommandEndBlock : public Command
 {
 public:
+	CommandEndBlock();
+
 	void execute(CommandMachine *machine) const override;
 };

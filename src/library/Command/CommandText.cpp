@@ -5,7 +5,8 @@
 
 
 CommandText::CommandText(const std::string &name)
-	: _name { name }
+	: Command { Type::Text }
+	, _name { name }
 {
 }
 

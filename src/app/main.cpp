@@ -1,18 +1,27 @@
-#include <async.h>
+#include <iostream>
+
+#include "AsyncManager.h"
+
+const char *const USAGE_MESSAGE = "Usage: bulk_server <port> <bulk_size>";
 
 
 
-int main(int, char **)
+int main(int argc, char *argv[])
 {
-	std::size_t bulk = 5;
-	auto h = async::connect(bulk);
-	auto h2 = async::connect(bulk);
-	async::receive(h, "1", 1);
-	async::receive(h2, "1\n", 2);
-	async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);
-	async::receive(h, "b\nc\nd\n}\n89\n", 11);
-	async::disconnect(h);
-	async::disconnect(h2);
+	if (argc != 3)
+	{
+		std::cout << USAGE_MESSAGE << std::endl;
+		return EXIT_FAILURE;
+	}
 
-	return 0;
+	size_t port = static_cast<size_t>(atoi(argv[1]));
+	size_t blockSize = static_cast<size_t>(atoll(argv[2]));
+
+	std::cout << "port: " << port << " blockSize: " << blockSize << std::endl;
+
+	AsyncManager asyncManager(blockSize);
+
+	asyncManager.execute("client1", "cmd1");
+	
+	return EXIT_SUCCESS;
 }
