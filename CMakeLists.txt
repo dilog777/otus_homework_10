@@ -2,29 +2,26 @@ cmake_minimum_required(VERSION 3.12)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
-project(async VERSION ${PROJECT_VERSION})
 
-set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+project(bulk_server VERSION ${PROJECT_VERSION})
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+#find_package(Boost COMPONENTS filesystem program_options regex REQUIRED)
 
 if (MSVC)
 	add_compile_options(/W4)
+#	add_definitions(-DBOOST_ALL_NO_LIB)
+#	add_definitions(-DBOOST_ALL_DYN_LINK)
 else()
 	add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-
 add_subdirectory(src)
 
-
-install(TARGETS async_cli async)
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
@@ -33,4 +30,4 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT async_cli)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

@@ -98,12 +98,12 @@ void FileLogger::Impl::processNote(const Note &note, int threadId) const
 {
 	auto fileName = makeFileName(note._time, threadId);
 	std::ofstream out;
-	out.open(fileName);
-	if (out.is_open())
-	{
-		out << note._str << std::endl;
-	}
-	out.close();
+//	out.open(fileName);
+//	if (out.is_open())
+//	{
+//		out << note._str << std::endl;
+//	}
+//	out.close();
 }
 
 
