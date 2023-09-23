@@ -19,7 +19,7 @@ public:
 
 	void ClientConnected(const ClientId &clientId) override;
 
-	void ClientMessage(const ClientId &clientId, const std::string &message) override;
+	void ClientSendMessage(const ClientId &clientId, const std::string &message) override;
 
 	void ClientDisconnected(const ClientId &clientId) override;
 

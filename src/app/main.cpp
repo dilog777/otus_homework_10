@@ -9,7 +9,7 @@ const char *const USAGE_MESSAGE = "Usage: bulk_server <port> <bulk_size>";
 
 
 
-template<class T>
+template <class T>
 T stringToType(const std::string &string)
 {
 	try
@@ -39,6 +39,6 @@ int main(int argc, char *argv[])
 	ClientServer server(commandExecutor);
 
 	server.run(port);
-	
+
 	return EXIT_SUCCESS;
 }

@@ -3,7 +3,7 @@
 
 
 Command::Command(Type type)
-	: _type	{ type	}
+	: _type { type }
 {
 }
 

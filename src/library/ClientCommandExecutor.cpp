@@ -24,7 +24,7 @@ void ClientCommandExecutor::ClientConnected([[maybe_unused]] const ClientId &cli
 
 
 
-void ClientCommandExecutor::ClientMessage(const ClientId &clientId, const std::string &message)
+void ClientCommandExecutor::ClientSendMessage(const ClientId &clientId, const std::string &message)
 {
 	auto command = CommandFactory::makeCommand(message);
 

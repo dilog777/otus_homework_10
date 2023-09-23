@@ -1,7 +1,5 @@
 #include "ClientServer.h"
 
-#include <iostream>
-
 #include <boost/algorithm/string/trim_all.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/detached.hpp>
@@ -57,8 +55,10 @@ asio::awaitable<void> ClientServer::Impl::listenPort(Port port)
 
 asio::awaitable<void> ClientServer::Impl::listenClient(tcp::socket socket)
 {
-	std::string clientName;
 	asio::streambuf buffer;
+
+	ClientMessageHandler::ClientId clientId = &socket;
+	_messageHandler->ClientConnected(clientId);
 
 	for (;;)
 	{
@@ -73,30 +73,12 @@ asio::awaitable<void> ClientServer::Impl::listenClient(tcp::socket socket)
 
 		std::string message(asio::buffer_cast<const char *>(buffer.data()), buffer.size());
 		boost::trim(message);
+		_messageHandler->ClientSendMessage(clientId, message);
 
 		buffer.consume(buffer.size());
-
-		if (clientName.empty())
-		{
-			clientName = message;
-
-			//std::cout << "Client \"" << clientName << "\": Connected." << std::endl;
-
-			_messageHandler->ClientConnected(clientName);
-
-			continue;
-		}
-		else
-		{
-			//std::cout << " Client \"" << clientName << "\": Sending: " << message << std::endl;
-
-			_messageHandler->ClientMessage(clientName, message);
-		}
 	}
 
-	//std::cout << " Client \"" << clientName << "\": Disconnected." << std::endl;
-
-	_messageHandler->ClientDisconnected(clientName);
+	_messageHandler->ClientDisconnected(clientId);
 }
 
 
