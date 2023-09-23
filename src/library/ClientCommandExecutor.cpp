@@ -30,16 +30,15 @@ void ClientCommandExecutor::ClientSendMessage(const ClientId &clientId, const st
 
 	if (_clientExecutors.count(clientId) != 0)
 	{
-		auto &executor = _clientExecutors.at(clientId);
-		executor->execute(command);
+		_clientExecutors[clientId]->execute(command);
 
-		if (!executor->dynamicMode())
+		if (!_clientExecutors[clientId]->dynamicMode())
 			_clientExecutors.erase(clientId);
 	}
 	else if (command->type() == Command::Type::BeginBlock)
 	{
 		_clientExecutors[clientId] = makeExecutor();
-		_clientExecutors.at(clientId)->execute(command);
+		_clientExecutors[clientId]->execute(command);
 	}
 	else
 	{

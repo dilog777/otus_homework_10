@@ -9,11 +9,10 @@ class ClientMessageHandler;
 class ClientServer
 {
 public:
-	using Port = unsigned short;
-
 	ClientServer(const std::shared_ptr<ClientMessageHandler> &messageHandler);
 	~ClientServer();
 
+	using Port = unsigned short;
 	void run(Port port);
 
 private:
