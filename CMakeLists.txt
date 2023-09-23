@@ -5,16 +5,15 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 project(bulk_server VERSION ${PROJECT_VERSION})
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#find_package(Boost COMPONENTS filesystem program_options regex REQUIRED)
+find_package(Boost COMPONENTS system REQUIRED)
 
 if (MSVC)
 	add_compile_options(/W4)
-#	add_definitions(-DBOOST_ALL_NO_LIB)
-#	add_definitions(-DBOOST_ALL_DYN_LINK)
+	add_definitions(-D_WIN32_WINNT=0x0501)
 else()
 	add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()

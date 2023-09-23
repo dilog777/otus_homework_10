@@ -4,19 +4,24 @@
 #include <string>
 #include <unordered_map>
 
+#include "ClientMessageHandler.h"
+
 class CommandExecutor;
 class ConsoleLogger;
 class FileLogger;
 
 
 
-class AsyncManager
+class ClientCommandExecutor : public ClientMessageHandler
 {
 public:
-	AsyncManager(std::size_t blockSize);
+	ClientCommandExecutor(std::size_t blockSize);
 
-	using ClientId = std::string;
-	void execute(const ClientId &clientId, const std::string &commandStr);
+	void ClientConnected(const ClientId &clientId) override;
+
+	void ClientMessage(const ClientId &clientId, const std::string &message) override;
+
+	void ClientDisconnected(const ClientId &clientId) override;
 
 private:
 	std::size_t _blockSize;

@@ -164,5 +164,5 @@ void CommandExecutor::execute(const std::shared_ptr<Command> &command)
 
 bool CommandExecutor::dynamicMode() const
 {
-	return (_impl->_deep == 0);
+	return (_impl->_deep != 0);
 }

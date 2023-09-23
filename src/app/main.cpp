@@ -1,8 +1,26 @@
 #include <iostream>
 
-#include "AsyncManager.h"
+#include <boost/lexical_cast.hpp>
+
+#include "ClientCommandExecutor.h"
+#include "ClientServer.h"
 
 const char *const USAGE_MESSAGE = "Usage: bulk_server <port> <bulk_size>";
+
+
+
+template<class T>
+T stringToType(const std::string &string)
+{
+	try
+	{
+		return boost::lexical_cast<T>(string);
+	}
+	catch (boost::bad_lexical_cast &)
+	{
+		return {};
+	}
+}
 
 
 
@@ -14,14 +32,13 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	size_t port = static_cast<size_t>(atoi(argv[1]));
-	size_t blockSize = static_cast<size_t>(atoll(argv[2]));
+	auto port = stringToType<ClientServer::Port>(argv[1]);
+	auto blockSize = stringToType<size_t>(argv[2]);
 
-	std::cout << "port: " << port << " blockSize: " << blockSize << std::endl;
+	auto commandExecutor = std::make_shared<ClientCommandExecutor>(blockSize);
+	ClientServer server(commandExecutor);
 
-	AsyncManager asyncManager(blockSize);
-
-	asyncManager.execute("client1", "cmd1");
+	server.run(port);
 	
 	return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-#include "AsyncManager.h"
+#include "ClientCommandExecutor.h"
 
 #include "Command/Command.h"
 #include "CommandExecutor.h"
@@ -8,7 +8,7 @@
 
 
 
-AsyncManager::AsyncManager(std::size_t blockSize)
+ClientCommandExecutor::ClientCommandExecutor(std::size_t blockSize)
 	: _blockSize { blockSize }
 	, _consoleLogger { new ConsoleLogger }
 	, _fileLogger { new FileLogger }
@@ -18,14 +18,21 @@ AsyncManager::AsyncManager(std::size_t blockSize)
 
 
 
-void AsyncManager::execute(const ClientId &clientId, const std::string &commandStr)
+void ClientCommandExecutor::ClientConnected([[maybe_unused]] const ClientId &clientId)
 {
-	auto command = CommandFactory::makeCommand(commandStr);
+}
+
+
+
+void ClientCommandExecutor::ClientMessage(const ClientId &clientId, const std::string &message)
+{
+	auto command = CommandFactory::makeCommand(message);
 
 	if (_clientExecutors.count(clientId) != 0)
 	{
 		auto &executor = _clientExecutors.at(clientId);
 		executor->execute(command);
+
 		if (!executor->dynamicMode())
 			_clientExecutors.erase(clientId);
 	}
@@ -42,7 +49,14 @@ void AsyncManager::execute(const ClientId &clientId, const std::string &commandS
 
 
 
-std::shared_ptr<CommandExecutor> AsyncManager::makeExecutor() const
+void ClientCommandExecutor::ClientDisconnected(const ClientId &clientId)
+{
+	_clientExecutors.erase(clientId);
+}
+
+
+
+std::shared_ptr<CommandExecutor> ClientCommandExecutor::makeExecutor() const
 {
 	auto executor = std::make_shared<CommandExecutor>(_blockSize);
 	executor->addLogger(_consoleLogger);
