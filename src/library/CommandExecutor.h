@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "GlobalMacroses.h"
+
 class Command;
 class Logger;
 
@@ -9,6 +11,8 @@ class Logger;
 
 class CommandExecutor
 {
+	DISABLE_COPY(CommandExecutor)
+
 public:
 	CommandExecutor(size_t blockSize);
 	~CommandExecutor();

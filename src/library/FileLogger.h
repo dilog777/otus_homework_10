@@ -1,11 +1,14 @@
 #pragma once
 
+#include "GlobalMacroses.h"
 #include "Logger.h"
 
 
 
 class FileLogger : public Logger
 {
+	DISABLE_COPY(FileLogger)
+
 public:
 	FileLogger();
 	~FileLogger() override;
